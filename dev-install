@@ -146,7 +146,7 @@ link "$dev_dir/aliases" "$HOME/.aliases"
 link "$dev_dir/gitconfig" "$HOME/.gitconfig"
 
 # configure zellij
-lint "$dev_dir/zellij" "$HOME/.zellij"
+link "$dev_dir/zellij" "$HOME/.zellij"
 
 kubectl_bin=$(which kubectl 2>/dev/null)
 if [ ! -x "$kubectl_bin" ]; then
@@ -160,6 +160,14 @@ else
 fi
 
 check_and_write '# kubectl completion' 'source "$HOME/.kubectlrc"' "$HOME/.devrc"
+
+link "$dev_dir/vimrc" "$HOME/.vimrc"
+if [ ! -f "$HOME/.vim/colors/solarized.vim" ]; then
+    echo "Installing solarized vim colors"
+    wget -q https://raw.github.com/altercation/vim-colors-solarized/master/colors/solarized.vim
+    mkdir -p "$HOME/.vim/colors"
+    mv solarized.vim "$HOME/.vim/colors"
+fi
 
 echo "dev installation complete"
 echo "source your .zshrc or exit the shell to reload your configuration"
