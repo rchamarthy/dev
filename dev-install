@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+
+function check_and_write() {
+    local comment="$1"; shift
+    local str="$1"; shift
+    local f="$1"
+
+    if ! grep -q "$str" "$f"; then
+	echo >> "$f"
+	echo "$comment" >> "$f"
+        echo "$str" >> "$f"
+    fi
+}
+
+echo "Install required packages"
+sudo apt-get install -y fzf direnv build-essential unzip pipx clang zsh
+
+if [ "$SHELL" != "$(which zsh)" ]; then
+    echo
+    echo "changing default shell to zsh"
+    chsh -s $(which zsh)
+fi
+
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    echo "Installing oh-my-zsh"
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+else
+    echo "oh-my-zsh already installed"
+fi
+
+touch "$HOME/.devrc"
+check_and_write '# configure dev system' 'source $HOME/.devrc' "$HOME/.zshrc"
+
+if ! $(which starship &>/dev/null); then
+    echo "Installing starship"
+    curl -sS https://starship.rs/install.sh | sh
+else
+    echo "starship already installed"
+fi
+
+check_and_write "# starship prompt" 'eval "$(starship init zsh)"' "$HOME/.devrc"
+
+# Check for uv (Python package installer)
+uv_bin=$(which uv 2>/dev/null)
+if [ ! -x "$uv_bin" ]; then
+    echo "Installing uv..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh || (echo "uv not found and not able to install" && exit 1)
+    export PATH="$HOME/.local/bin:$PATH"
+else
+    echo "uv already installed"
+fi
+
+check_and_write '# uv path' 'export PATH="$HOME/.local/bin:$PATH"' "$HOME/.devrc"
+
+# Check for pre-commit hooks
+hooks=$(which pre-commit 2>/dev/null)
+if [ ! -x "$hooks" ]; then
+    echo "Installing pre-commit..."
+    uv tool install pre-commit --with pre-commit-uv --force-reinstall
+else
+    echo "pre-commit already installed"
+fi
+
+# Check for cargo/rustup
+cargo_bin=$(which cargo 2>/dev/null)
+if [ ! -x "$cargo_bin" ]; then
+    echo "Installing Rust via rustup..."
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source "$HOME/.cargo/env"
+else
+    echo "rust already installed"
+fi
+
+check_and_write '# cargo env' 'source "$HOME/.cargo/env"' "$HOME/.devrc"
+
+echo "install rust binaries"
+cargo install goup-rs eza bat du-dust just grex ripgrep procs xh zellij zoxide atuin broot git-delta fd-find bottom
+
+# Check for Go
+go_bin=$(which go 2>/dev/null)
+if [ ! -x "$go_bin" ]; then
+    echo "Installing Go..."
+    goup init
+    source "$HOME/.goup/env"
+    goup install
+else
+    echo "goup/go already installed"
+fi
+
+check_and_write '# go env' 'source $HOME/.goup/env' "$HOME/.devrc"
+
+# Check for NVM
+if [ ! -d "$HOME/.nvm" ]; then
+    echo "Installing NVM..."
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+else
+    echo "nvm already installed"
+fi
+
+check_and_write "# nvm dir" 'export NVM_DIR="$HOME/.nvm"' "$HOME/.devrc"
+check_and_write "# nvm env" 'source "$NVM_DIR/nvm.sh"' "$HOME/.devrc"
+
+# Check for Node.js
+node_bin=$(which node 2>/dev/null)
+if [ ! -x "$node_bin" ]; then
+    echo "Installing Node.js..."
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    nvm install --lts
+fi
+
+# Check for Yarn
+yarn_bin=$(which yarn 2>/dev/null)
+if [ ! -x "$yarn_bin" ]; then
+    echo "Installing Yarn..."
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    npm install -g yarn
+fi
+
+# Check for TypeScript
+tsc_bin=$(which tsc 2>/dev/null)
+if [ ! -x "$tsc_bin" ]; then
+    echo "Installing TypeScript..."
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    npm install -g typescript
+fi
+
+# Install aliases
+dev_dir=$(dirname "$(realpath "$0")")
+check_and_write "# aliases" 'source "$HOME/.aliases"' "$HOME/.devrc"
+if [ ! -L "$HOME/.aliases" ]; then
+    ln -s "$dev_dir/aliases" "$HOME/.aliases"
+fi
+
+# Install git 
+if [ ! -L "$HOME/.gitconfig" ]; then
+    ln -s "$dev_dir/gitconfig" "$HOME/.gitconfig"
+fi
+
+echo "dev installation complete"
+echo "source your .zshrc or exit the shell to reload your configuration"

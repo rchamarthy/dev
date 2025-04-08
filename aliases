@@ -1,0 +1,51 @@
+# Easier navigation: .., ..., ...., ....., ~ and -
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+alias ~="cd ~" # `cd` is probably faster to type though
+alias -- -="cd -"
+
+# Shortcuts
+alias g="git"
+alias h="history"
+alias j="just"
+alias c="clear"
+
+# rust aliases
+alias ls="eza"
+alias cat="bat -p"
+alias l="eza"
+alias ll="eza --long --header"
+alias lt="eza --long --header --tree"
+alias llg="eza --long --header --git"
+alias la="eza --long --all"
+alias lsd="eza --all --only-dirs"
+
+# Enable aliases to be sudo’ed
+alias sudo='sudo '
+
+# Get week number
+alias week='date +%V'
+
+# Stopwatch
+alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'
+
+# Make sure vi is vim
+alias vi="vim"
+
+# git is just g
+alias g="git"
+
+# python is python3
+alias python="python3"
+
+
+# k8s aliases
+function kns() { export K8S_NS="$1"; }
+alias kk="kubectl"
+alias k="kk -n $K8S_NS"
+alias kl="k logs"
+alias kp="k get pods"
+alias kpd="k describe pods"
+alias kex="k exec -it"
