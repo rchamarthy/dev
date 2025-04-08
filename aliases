@@ -7,8 +7,7 @@ alias ~="cd ~" # `cd` is probably faster to type though
 alias -- -="cd -"
 
 # Shortcuts
-alias g="git"
-alias h="history"
+alias h="atuin history list"
 alias j="just"
 alias c="clear"
 
@@ -36,12 +35,17 @@ alias vi="vim"
 
 # git is just g
 alias g="git"
+alias gc="git clone"
 
 # python is python3
 alias python="python3"
 
 # top is bottom
 alias top="btm"
+
+# source shortcuts
+alias sb="source ~/.zshrc"
+alias sd="source ~/.devrc"
 
 # k8s aliases
 function kns() { export K8S_NS="$1"; }
