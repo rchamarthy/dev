@@ -154,9 +154,12 @@ if [ ! -x "$kubectl_bin" ]; then
     curl -s -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
     chmod 755 kubectl
     mv kubectl "$HOME/.local/bin/kubectl"
-    kubectl completion zsh > "$HOME/.kubectlrc"
 else
     echo "kubectl already install"
+fi
+
+if [ ! -f "$HOME/.kubectlrc" ]; then
+    kubectl completion zsh > "$HOME/.kubectlrc"
 fi
 
 check_and_write '# kubectl completion' 'source "$HOME/.kubectlrc"' "$HOME/.devrc"
@@ -168,6 +171,13 @@ if [ ! -f "$HOME/.vim/colors/solarized.vim" ]; then
     mkdir -p "$HOME/.vim/colors"
     mv solarized.vim "$HOME/.vim/colors"
 fi
+
+if [ ! -f "$HOME/.atuin" ]; then
+    echo "configuring atuin history"
+    atuin init zsh > "$HOME/.atuin"
+fi
+
+check_and_write '# Enable atuin history' 'source "$HOME/.atuin"' "$HOME/.devrc"
 
 echo "dev installation complete"
 echo "source your .zshrc or exit the shell to reload your configuration"
