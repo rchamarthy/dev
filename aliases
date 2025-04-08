@@ -40,6 +40,8 @@ alias g="git"
 # python is python3
 alias python="python3"
 
+# top is bottom
+alias top="btm"
 
 # k8s aliases
 function kns() { export K8S_NS="$1"; }
