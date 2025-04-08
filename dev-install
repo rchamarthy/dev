@@ -136,6 +136,19 @@ if [ ! -L "$HOME/.aliases" ]; then
     ln -s "$dev_dir/aliases" "$HOME/.aliases"
 fi
 
+kubectl_bin=$(which kubectl 2>/dev/null)
+if [ ! -x "$kubectl_bin" ]; then
+    echo "Installing kubectl"
+    curl -s -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    chmod 755 kubectl
+    mv kubectl "$HOME/.local/bin/kubectl"
+    kubectl completion zsh > "$HOME/.kubectlrc"
+else
+    echo "kubectl already install"
+fi
+
+check_and_write '# kubectl completion' 'source "$HOME/.kubectlrc"' "$HOME/.devrc"
+
 # Install git 
 if [ ! -L "$HOME/.gitconfig" ]; then
     ln -s "$dev_dir/gitconfig" "$HOME/.gitconfig"
