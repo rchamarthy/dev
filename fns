@@ -7,3 +7,12 @@ function kns() {
   fi
   export K8S_INFO="$K8S_CLUSTER_NAME:$K8S_NS"
 }
+
+function k() {
+  kubectl -n "$K8S_NS"
+}
+
+# git functions
+function gc() {
+    git clone git@github.com:$GITHUB_ORG/$1.git
+}
