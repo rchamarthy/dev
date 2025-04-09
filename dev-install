@@ -139,10 +139,10 @@ fi
 
 # Install aliases and fns
 dev_dir=$(dirname "$(realpath "$0")")
-check_and_write "# fns" 'source "$HOME/.dev/fns"' "$HOME/.devrc"
+check_and_write "# fns" 'source "$HOME/.dev/fns" &>/dev/null' "$HOME/.devrc"
 check_and_write "# user defined fns" 'source "$HOME/.fns"' "$HOME/.devrc"
 check_and_write "# aliases" 'source "$HOME/.dev/aliases"' "$HOME/.devrc"
-check_and_write "# user defined aliases" 'source "$HOME/.aliases"' "$HOME/.devrc"
+check_and_write "# user defined aliases" 'source "$HOME/.aliases" &>/dev/null' "$HOME/.devrc"
 
 
 # Install git 
@@ -188,6 +188,8 @@ check_and_write '# Enable just completions' 'source "$HOME/.just"' "$HOME/.devrc
 
 # Configure starship
 link "$dev_dir/starship.toml" "$HOME/.config/starship.toml"
+
+check_and_write '# initialize zoxide' 'eval "$(zoxide init zsh)"' "$HOME/.devrc"
 
 echo "dev installation complete"
 echo "source your .zshrc or exit the shell to reload your configuration"
