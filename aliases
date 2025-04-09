@@ -36,7 +36,6 @@ alias vi="vim"
 
 # git is just g
 alias g="git"
-alias gc="git clone"
 
 # python is python3
 alias python="python3"
