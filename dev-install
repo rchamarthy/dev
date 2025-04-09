@@ -82,7 +82,7 @@ fi
 check_and_write '# cargo env' 'source "$HOME/.cargo/env"' "$HOME/.devrc"
 
 echo "install rust binaries"
-cargo install goup-rs eza bat du-dust just grex ripgrep procs xh zellij zoxide atuin broot git-delta fd-find bottom
+cargo install goup-rs eza bat du-dust just grex ripgrep procs xh zellij zoxide atuin broot git-delta fd-find bottom difftastic
 
 # Check for Go
 go_bin=$(which go 2>/dev/null)
@@ -95,7 +95,7 @@ else
     echo "goup/go already installed"
 fi
 
-check_and_write '# go env' 'source $HOME/.goup/env' "$HOME/.devrc"
+check_and_write '# go env' 'source "$HOME/.goup/env"' "$HOME/.devrc"
 
 # Check for NVM
 if [ ! -d "$HOME/.nvm" ]; then
@@ -137,16 +137,14 @@ if [ ! -x "$tsc_bin" ]; then
     npm install -g typescript
 fi
 
-# Install aliases
+# Install aliases and fns
 dev_dir=$(dirname "$(realpath "$0")")
-check_and_write "# aliases" 'source "$HOME/.aliases"' "$HOME/.devrc"
-link "$dev_dir/aliases" "$HOME/.aliases"
+check_and_write "# aliases" 'source "$HOME/.dev/aliases"' "$HOME/.devrc"
+check_and_write "# fns" 'source "$HOME/.dev/fns"' "$HOME/.devrc"
+
 
 # Install git 
 link "$dev_dir/gitconfig" "$HOME/.gitconfig"
-
-# configure zellij
-link "$dev_dir/zellij" "$HOME/.zellij"
 
 kubectl_bin=$(which kubectl 2>/dev/null)
 if [ ! -x "$kubectl_bin" ]; then
@@ -178,6 +176,16 @@ if [ ! -f "$HOME/.atuin" ]; then
 fi
 
 check_and_write '# Enable atuin history' 'source "$HOME/.atuin"' "$HOME/.devrc"
+
+if [ ! -f "$HOME/.just" ]; then
+  echo "installing just completions"
+  just --completions zsh > "$HOME/.just"
+fi
+
+check_and_write '# Enable just completions' 'source "$HOME/.just"' "$HOME/.devrc"
+
+# Configure starship
+link "$dev_dir/starship.toml" "$HOME/.config/starship.toml"
 
 echo "dev installation complete"
 echo "source your .zshrc or exit the shell to reload your configuration"

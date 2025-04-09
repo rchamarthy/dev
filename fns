@@ -1,0 +1,9 @@
+# k8s ns and cluster info
+function kns() {
+  export K8S_NS="${1:-default}";
+  if [ -z "$K8S_CLUSTER_NAME" ]; then
+    n=$(kubectl config view --minify -o jsonpath='{.context.cluster}' &>/dev/null)
+    export K8S_CLUSTER_NAME="${n:-no-cluster}"
+  fi
+  export K8S_INFO="$K8S_CLUSTER_NAME:$K8S_NS"
+}

@@ -20,6 +20,7 @@ alias lt="eza --long --header --tree"
 alias llg="eza --long --header --git"
 alias la="eza --long --all"
 alias lsd="eza --all --only-dirs"
+alias diff="difft"
 
 # Enable aliases to be sudo’ed
 alias sudo='sudo '
@@ -48,10 +49,14 @@ alias sb="source ~/.zshrc"
 alias sd="source ~/.devrc"
 
 # k8s aliases
-function kns() { export K8S_NS="$1"; }
 alias kk="kubectl"
 alias k="kk -n $K8S_NS"
 alias kl="k logs"
 alias kp="k get pods"
 alias kpd="k describe pods"
 alias kex="k exec -it"
+alias mk='microk8s'
+
+# bob aliases
+alias b="bob"
+alias bc="select-cluster"

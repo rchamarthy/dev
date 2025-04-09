@@ -113,6 +113,7 @@
     # http://michael-kuehnel.de/git/2014/11/21/git-mac-osx-and-german-umlaute.html
     precomposeunicode = false
     editor = vim
+	pager = delta
 
 [color]
     # Use colors in Git commands that are capable of colored output when
@@ -146,6 +147,7 @@
 [merge]
     # Include summaries of merged commits in newly created merge commit messages
     log = true
+	conflictStyle = zdiff3
 
 [push]
     # Use the Git 1.x.x default to avoid errors on machines with old Git
@@ -186,3 +188,7 @@
 [init]
     defaultBranch = main
 
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true

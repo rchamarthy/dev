@@ -1,0 +1,15 @@
+command_timeout = 10000
+
+[env_var]
+
+variable = "K8S_INFO"
+format = "[⎈ $env_value](bold green) "  # Customize appearance
+default = "no-cluster"  # Fallback when MY_VAR is unset
+
+[python]
+
+disabled = true
+
+[package]
+
+disabled = true
