@@ -9,7 +9,7 @@ function kns() {
 }
 
 function k() {
-  kubectl -n "$K8S_NS"
+  kubectl -n "$K8S_NS" "$@"
 }
 
 # git functions
