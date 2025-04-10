@@ -21,7 +21,7 @@ function link() {
 }
 
 echo "Install required packages"
-sudo apt-get install -y fzf direnv build-essential unzip pipx clang zsh curl pkg-config libssl-dev ca-certificates
+sudo apt-get install -y fzf direnv build-essential unzip pipx clang zsh curl pkg-config libssl-dev ca-certificates podman
 
 if [ "$SHELL" != "$(which zsh)" ]; then
     echo
