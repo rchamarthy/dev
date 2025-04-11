@@ -12,6 +12,27 @@ function k() {
   kubectl -n "$K8S_NS" "$@"
 }
 
+# Custom completion function for k that handles the namespace argument
+function _k() {
+  # Save original command line
+  local orig_words=("${words[@]}")
+  local orig_current=$CURRENT
+
+  # Create new command line by replacing k with kubectl -n $K8S_NS
+  words=(kubectl -n "$K8S_NS" "${words[@]:1}")
+  (( CURRENT += 2 )) # Adjust cursor position to account for added "-n $K8S_NS"
+
+  # Call kubectl completion
+  _kubectl
+
+  # Restore original command line
+  words=("${orig_words[@]}")
+  CURRENT=$orig_current
+}
+
+# Register the completion function for k
+compdef _k k
+
 # git functions
 function gc() {
     git clone git@github.com:$GITHUB_ORG/$1.git
