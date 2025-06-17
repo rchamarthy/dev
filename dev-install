@@ -39,6 +39,9 @@ else
     echo "oh-my-zsh already installed"
 fi
 
+touch "$HOME/.atuin"
+check_and_write '# disable up arrow' 'eval "$(atuin init zsh --disable-up-arrow)"' "$HOME/.atuin"
+
 touch "$HOME/.devrc"
 check_and_write '# configure dev system' 'source $HOME/.devrc' "$HOME/.zshrc"
 
