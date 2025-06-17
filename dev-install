@@ -148,7 +148,6 @@ fi
 # Install aliases and fns
 dev_dir=$(dirname "$(realpath "$0")")
 check_and_write "# fns" 'source "$HOME/.dev/fns" &>/dev/null' "$HOME/.devrc"
-check_and_write "# user defined fns" 'source "$HOME/.fns"' "$HOME/.devrc"
 check_and_write "# aliases" 'source "$HOME/.dev/aliases"' "$HOME/.devrc"
 check_and_write "# user defined aliases" 'source "$HOME/.aliases" &>/dev/null' "$HOME/.devrc"
 
