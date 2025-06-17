@@ -85,7 +85,9 @@ fi
 check_and_write '# cargo env' 'source "$HOME/.cargo/env"' "$HOME/.devrc"
 
 echo "install rust binaries"
-cargo install goup-rs eza bat du-dust just grex ripgrep procs xh zellij zoxide atuin broot git-delta fd-find bottom difftastic
+cargo install eza bat du-dust just grex ripgrep procs xh zellij zoxide atuin broot git-delta fd-find bottom difftastic
+
+cargo install goup-rs --git https://github.com/thinkgos/goup-rs
 
 # Check for Go
 go_bin=$(which go 2>/dev/null)
