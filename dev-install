@@ -180,8 +180,8 @@ if [ ! -f "$HOME/.vim/colors/solarized.vim" ]; then
 fi
 
 if [ ! -f "$HOME/.atuin" ]; then
-    echo "configuring atuin history"
-    atuin init zsh > "$HOME/.atuin"
+    # Configure atuin
+    link "$dev_dir/atuin" "$HOME/.atuin
 fi
 
 check_and_write '# Enable atuin history' 'source "$HOME/.atuin"' "$HOME/.devrc"
