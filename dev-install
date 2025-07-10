@@ -181,7 +181,7 @@ fi
 
 if [ ! -f "$HOME/.atuin" ]; then
     # Configure atuin
-    link "$dev_dir/atuin" "$HOME/.atuin
+    link "$dev_dir/atuin" "$HOME/.atuin"
 fi
 
 check_and_write '# Enable atuin history' 'source "$HOME/.atuin"' "$HOME/.devrc"
