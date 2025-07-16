@@ -1,15 +1,53 @@
 command_timeout = 10000
 
-[env_var]
+format = """
+$hostname$directory$git_branch$git_status$env_var$status$cmd_duration
+$character
+"""
 
-variable = "K8S_INFO"
-format = "[⎈ $env_value](bold green) "  # Customize appearance
-default = "no-cluster"  # Fallback when MY_VAR is unset
+[hostname]
+ssh_only = false
+format = '[$hostname]($style)'
+style = 'bold green'
 
-[python]
+[directory]
+truncation_length = 3
+truncate_to_repo = true
+style = 'cyan'
+format = ':/[$path]($style) '
 
-disabled = true
+[git_branch]
+symbol = ''
+style = 'purple'
+format = '[$symbol$branch]($style) '
 
-[package]
+[git_status]
+format = '([\[$all_status$ahead_behind\]](red) )'
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+staged = "✚"
+modified = "⚠"
+untracked = "?"
+stashed = "📦"
+deleted = "✘"
+conflicted = "⚔"
 
-disabled = true
+[env_var.K8S_INFO]
+format = '[⎈$env_value](bold blue) '
+default = '⎈ no-cluster'
+
+[status]
+style = 'bold red'
+symbol = '✗'
+format = ' [$symbol $status]($style)'
+disabled = false
+
+[cmd_duration]
+min_time = 2000  # show if command took > 2 seconds
+format = '⏱ [$duration]($style)'
+style = 'bold yellow'
+
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[✗](bold red)"
