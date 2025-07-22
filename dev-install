@@ -20,9 +20,17 @@ function link() {
     fi
 }
 
+function remove_line() {
+    local src="$1"; shift
+    local line="$1"
+    rm -f "$src.old"
+    mv "$src" "$src.old"
+    cat "$src.old" | grep -v "$line" > "$src"
+}
+
 echo "Install required packages"
 sudo apt-get update -y
-sudo apt-get install -y fzf direnv build-essential unzip pipx clang zsh curl pkg-config libssl-dev ca-certificates podman wget
+sudo apt-get install -y fzf direnv build-essential unzip pipx clang zsh curl pkg-config libssl-dev ca-certificates podman wget jq
 
 if [ "$SHELL" != "$(which zsh)" ]; then
     echo
@@ -43,16 +51,6 @@ fi
 touch "$HOME/.devrc"
 check_and_write '# configure dev system' 'source $HOME/.devrc' "$HOME/.zshrc"
 
-if ! $(which starship &>/dev/null); then
-    echo "Installing starship locally"
-    mkdir -p "$HOME/.local/bin"
-    curl -sS https://starship.rs/install.sh | sh -s -- --bin-dir "$HOME/.local/bin" --yes
-else
-    echo "starship already installed"
-fi
-
-check_and_write "# starship prompt" 'eval "$(starship init zsh)"' "$HOME/.devrc"
-
 # Check for uv (Python package installer)
 uv_bin=$(which uv 2>/dev/null)
 if [ ! -x "$uv_bin" ]; then
@@ -64,6 +62,16 @@ else
 fi
 
 check_and_write '# uv path' 'export PATH="$HOME/.local/bin:$PATH"' "$HOME/.devrc"
+
+if ! $(which starship &>/dev/null); then
+    echo "Installing starship locally"
+    mkdir -p "$HOME/.local/bin"
+    curl -sS https://starship.rs/install.sh | sh -s -- --bin-dir "$HOME/.local/bin" --yes
+else
+    echo "starship already installed"
+fi
+
+check_and_write "# starship prompt" 'eval "$(starship init zsh)"' "$HOME/.devrc"
 
 # Check for pre-commit hooks
 hooks=$(which pre-commit 2>/dev/null)
@@ -95,7 +103,8 @@ else
     echo "atuin already installed"
 fi
 
-check_and_write '# atuin path' 'export PATH="$HOME/.atuin/bin:$PATH"' "$HOME/.devrc"
+check_and_write '# atuin path' 'source "$HOME/.atuin/bin/env"' "$HOME/.devrc"
+remove_line '.zshrc' 'atuin'
 
 echo "install rust binaries"
 cargo install eza bat du-dust just grex ripgrep procs xh zellij zoxide broot git-delta fd-find bottom difftastic
