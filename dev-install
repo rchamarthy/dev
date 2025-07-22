@@ -6,8 +6,8 @@ function check_and_write() {
     local f="$1"
 
     if ! grep -q "$str" "$f"; then
-	echo >> "$f"
-	echo "$comment" >> "$f"
+        echo >> "$f"
+        echo "$comment" >> "$f"
         echo "$str" >> "$f"
     fi
 }
@@ -27,7 +27,8 @@ sudo apt-get install -y fzf direnv build-essential unzip pipx clang zsh curl pkg
 if [ "$SHELL" != "$(which zsh)" ]; then
     echo
     echo "changing default shell to zsh"
-    chsh -s $(which zsh)
+    echo "$(which zsh)" | sudo tee -a /etc/shells >/dev/null
+    sudo chsh -s $(which zsh) $USER
 fi
 
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -39,15 +40,13 @@ else
     echo "oh-my-zsh already installed"
 fi
 
-touch "$HOME/.atuin"
-check_and_write '# disable up arrow' 'eval "$(atuin init zsh --disable-up-arrow)"' "$HOME/.atuin"
-
 touch "$HOME/.devrc"
 check_and_write '# configure dev system' 'source $HOME/.devrc' "$HOME/.zshrc"
 
 if ! $(which starship &>/dev/null); then
-    echo "Installing starship"
-    curl -sS https://starship.rs/install.sh | sh
+    echo "Installing starship locally"
+    mkdir -p "$HOME/.local/bin"
+    curl -sS https://starship.rs/install.sh | sh -s -- --bin-dir "$HOME/.local/bin" --yes
 else
     echo "starship already installed"
 fi
@@ -87,8 +86,19 @@ fi
 
 check_and_write '# cargo env' 'source "$HOME/.cargo/env"' "$HOME/.devrc"
 
+# Install atuin binary
+atuin_bin=$(which atuin 2>/dev/null)
+if [ ! -x "$atuin_bin" ]; then
+    echo "Installing atuin..."
+    curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
+else
+    echo "atuin already installed"
+fi
+
+check_and_write '# atuin path' 'export PATH="$HOME/.atuin/bin:$PATH"' "$HOME/.devrc"
+
 echo "install rust binaries"
-cargo install eza bat du-dust just grex ripgrep procs xh zellij zoxide atuin broot git-delta fd-find bottom difftastic
+cargo install eza bat du-dust just grex ripgrep procs xh zellij zoxide broot git-delta fd-find bottom difftastic
 
 cargo install goup-rs --git https://github.com/thinkgos/goup-rs
 
@@ -181,7 +191,7 @@ fi
 
 if [ ! -f "$HOME/.atuin" ]; then
     # Configure atuin
-    link "$dev_dir/atuin" "$HOME/.atuin"
+    link "$dev_dir/atuinrc" "$HOME/.atuinrc"
 fi
 
 check_and_write '# Enable atuin history' 'source "$HOME/.atuin"' "$HOME/.devrc"
