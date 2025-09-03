@@ -28,6 +28,22 @@ function remove_line() {
     cat "$src.old" | grep -v "$line" > "$src"
 }
 
+function host_arch() {
+  local a; a=$(uname -m)
+  case "$a" in
+    armv5*) a="armv5";;
+    armv6*) a="armv6";;
+    armv7*) a="arm";;
+    aarch64) a="arm64";;
+    x86) a="386";;
+    x86_64) a="amd64";;
+    i686) a="386";;
+    i386) a="386";;
+  esac
+
+  echo "$a"
+}
+
 echo "Install required packages"
 sudo apt-get update -y
 sudo apt-get install -y fzf direnv build-essential unzip pipx clang zsh curl pkg-config libssl-dev ca-certificates podman wget jq
@@ -177,7 +193,7 @@ link "$dev_dir/gitconfig" "$HOME/.gitconfig"
 kubectl_bin=$(which kubectl 2>/dev/null)
 if [ ! -x "$kubectl_bin" ]; then
     echo "Installing kubectl"
-    curl -s -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    curl -s -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/$(host_arch)/kubectl"
     chmod 755 kubectl
     mv kubectl "$HOME/.local/bin/kubectl"
 else
