@@ -210,3 +210,7 @@
     # Set difftastic as the default difftool, so we don't need to specify
     # `-t difftastic` every time.
     tool = difftastic
+[user]
+	email = ravi@chamarthy.dev
+	name = Ravi Chamarthy
+	signingkey = FD50959F63EEA045
