@@ -1,44 +1,49 @@
 #!/usr/bin/env bash
 
 function check_and_write() {
-    local comment="$1"; shift
-    local str="$1"; shift
-    local f="$1"
+  local comment="$1"
+  shift
+  local str="$1"
+  shift
+  local f="$1"
 
-    if ! grep -q "$str" "$f"; then
-        echo >> "$f"
-        echo "$comment" >> "$f"
-        echo "$str" >> "$f"
-    fi
+  if ! grep -q "$str" "$f"; then
+    echo >>"$f"
+    echo "$comment" >>"$f"
+    echo "$str" >>"$f"
+  fi
 }
 
 function link() {
-    local src="$1"; shift
-    local target="$1"
-    if [ ! -L "$target" ]; then
-        ln -s "$src" "$target"
-    fi
+  local src="$1"
+  shift
+  local target="$1"
+  if [ ! -L "$target" ]; then
+    ln -s "$src" "$target"
+  fi
 }
 
 function remove_line() {
-    local src="$1"; shift
-    local line="$1"
-    rm -f "$src.old"
-    mv "$src" "$src.old"
-    cat "$src.old" | grep -v "$line" > "$src"
+  local src="$1"
+  shift
+  local line="$1"
+  rm -f "$src.old"
+  mv "$src" "$src.old"
+  cat "$src.old" | grep -v "$line" >"$src"
 }
 
 function host_arch() {
-  local a; a=$(uname -m)
+  local a
+  a=$(uname -m)
   case "$a" in
-    armv5*) a="armv5";;
-    armv6*) a="armv6";;
-    armv7*) a="arm";;
-    aarch64) a="arm64";;
-    x86) a="386";;
-    x86_64) a="amd64";;
-    i686) a="386";;
-    i386) a="386";;
+  armv5*) a="armv5" ;;
+  armv6*) a="armv6" ;;
+  armv7*) a="arm" ;;
+  aarch64) a="arm64" ;;
+  x86) a="386" ;;
+  x86_64) a="amd64" ;;
+  i686) a="386" ;;
+  i386) a="386" ;;
   esac
 
   echo "$a"
@@ -49,19 +54,19 @@ sudo apt-get update -y
 sudo apt-get install -y fzf direnv build-essential unzip pipx clang zsh curl pkg-config libssl-dev ca-certificates podman wget jq
 
 if [ "$SHELL" != "$(which zsh)" ]; then
-    echo
-    echo "changing default shell to zsh"
-    echo "$(which zsh)" | sudo tee -a /etc/shells >/dev/null
-    sudo chsh -s $(which zsh) $USER
+  echo
+  echo "changing default shell to zsh"
+  echo "$(which zsh)" | sudo tee -a /etc/shells >/dev/null
+  sudo chsh -s $(which zsh) $USER
 fi
 
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    echo "Installing oh-my-zsh"
-    export RUNZSH=no
-    export CHSH=no
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  echo "Installing oh-my-zsh"
+  export RUNZSH=no
+  export CHSH=no
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 else
-    echo "oh-my-zsh already installed"
+  echo "oh-my-zsh already installed"
 fi
 
 touch "$HOME/.devrc"
@@ -70,21 +75,21 @@ check_and_write '# configure dev system' 'source $HOME/.devrc' "$HOME/.zshrc"
 # Check for uv (Python package installer)
 uv_bin=$(which uv 2>/dev/null)
 if [ ! -x "$uv_bin" ]; then
-    echo "Installing uv..."
-    curl -LsSf https://astral.sh/uv/install.sh | sh || (echo "uv not found and not able to install" && exit 1)
-    export PATH="$HOME/.local/bin:$PATH"
+  echo "Installing uv..."
+  curl -LsSf https://astral.sh/uv/install.sh | sh || (echo "uv not found and not able to install" && exit 1)
+  export PATH="$HOME/.local/bin:$PATH"
 else
-    echo "uv already installed"
+  echo "uv already installed"
 fi
 
 check_and_write '# uv path' 'export PATH="$HOME/.local/bin:$PATH"' "$HOME/.devrc"
 
 if ! $(which starship &>/dev/null); then
-    echo "Installing starship locally"
-    mkdir -p "$HOME/.local/bin"
-    curl -sS https://starship.rs/install.sh | sh -s -- --bin-dir "$HOME/.local/bin" --yes
+  echo "Installing starship locally"
+  mkdir -p "$HOME/.local/bin"
+  curl -sS https://starship.rs/install.sh | sh -s -- --bin-dir "$HOME/.local/bin" --yes
 else
-    echo "starship already installed"
+  echo "starship already installed"
 fi
 
 check_and_write "# starship prompt" 'eval "$(starship init zsh)"' "$HOME/.devrc"
@@ -92,20 +97,20 @@ check_and_write "# starship prompt" 'eval "$(starship init zsh)"' "$HOME/.devrc"
 # Check for pre-commit hooks
 hooks=$(which pre-commit 2>/dev/null)
 if [ ! -x "$hooks" ]; then
-    echo "Installing pre-commit..."
-    uv tool install pre-commit --with pre-commit-uv --force-reinstall
+  echo "Installing pre-commit..."
+  uv tool install pre-commit --with pre-commit-uv --force-reinstall
 else
-    echo "pre-commit already installed"
+  echo "pre-commit already installed"
 fi
 
 # Check for cargo/rustup
 cargo_bin=$(which cargo 2>/dev/null)
 if [ ! -x "$cargo_bin" ]; then
-    echo "Installing Rust via rustup..."
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    source "$HOME/.cargo/env"
+  echo "Installing Rust via rustup..."
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+  source "$HOME/.cargo/env"
 else
-    echo "rust already installed"
+  echo "rust already installed"
 fi
 
 check_and_write '# cargo env' 'source "$HOME/.cargo/env"' "$HOME/.devrc"
@@ -113,14 +118,14 @@ check_and_write '# cargo env' 'source "$HOME/.cargo/env"' "$HOME/.devrc"
 # Install atuin binary
 atuin_bin=$(which atuin 2>/dev/null)
 if [ ! -x "$atuin_bin" ]; then
-    echo "Installing atuin..."
-    curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
+  echo "Installing atuin..."
+  curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
 else
-    echo "atuin already installed"
+  echo "atuin already installed"
 fi
 
 check_and_write '# atuin path' 'source "$HOME/.atuin/bin/env"' "$HOME/.devrc"
-remove_line '.zshrc' 'atuin'
+remove_line "$HOME/.zshrc" 'atuin'
 
 echo "install rust binaries"
 cargo install eza bat du-dust just grex ripgrep procs xh zellij zoxide broot git-delta fd-find bottom difftastic
@@ -130,24 +135,24 @@ cargo install goup-rs --git https://github.com/thinkgos/goup-rs
 # Check for Go
 go_bin=$(which go 2>/dev/null)
 if [ ! -x "$go_bin" ]; then
-    echo "Installing Go..."
-    goup init
-    source "$HOME/.goup/env"
-    goup install
+  echo "Installing Go..."
+  goup init
+  source "$HOME/.goup/env"
+  goup install
 else
-    echo "goup/go already installed"
+  echo "goup/go already installed"
 fi
 
 check_and_write '# go env' 'source "$HOME/.goup/env"' "$HOME/.devrc"
 
 # Check for NVM
 if [ ! -d "$HOME/.nvm" ]; then
-    echo "Installing NVM..."
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  echo "Installing NVM..."
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 else
-    echo "nvm already installed"
+  echo "nvm already installed"
 fi
 
 check_and_write "# nvm dir" 'export NVM_DIR="$HOME/.nvm"' "$HOME/.devrc"
@@ -156,28 +161,28 @@ check_and_write "# nvm env" 'source "$NVM_DIR/nvm.sh"' "$HOME/.devrc"
 # Check for Node.js
 node_bin=$(which node 2>/dev/null)
 if [ ! -x "$node_bin" ]; then
-    echo "Installing Node.js..."
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    nvm install --lts
+  echo "Installing Node.js..."
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  nvm install --lts
 fi
 
 # Check for Yarn
 yarn_bin=$(which yarn 2>/dev/null)
 if [ ! -x "$yarn_bin" ]; then
-    echo "Installing Yarn..."
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    npm install -g yarn
+  echo "Installing Yarn..."
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  npm install -g yarn
 fi
 
 # Check for TypeScript
 tsc_bin=$(which tsc 2>/dev/null)
 if [ ! -x "$tsc_bin" ]; then
-    echo "Installing TypeScript..."
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    npm install -g typescript
+  echo "Installing TypeScript..."
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  npm install -g typescript
 fi
 
 # Install aliases and fns
@@ -186,44 +191,43 @@ check_and_write "# fns" 'source "$HOME/.dev/fns" &>/dev/null' "$HOME/.devrc"
 check_and_write "# aliases" 'source "$HOME/.dev/aliases"' "$HOME/.devrc"
 check_and_write "# user defined aliases" 'source "$HOME/.aliases" &>/dev/null' "$HOME/.devrc"
 
-
-# Install git 
+# Install git
 link "$dev_dir/gitconfig" "$HOME/.gitconfig"
 
 kubectl_bin=$(which kubectl 2>/dev/null)
 if [ ! -x "$kubectl_bin" ]; then
-    echo "Installing kubectl"
-    curl -s -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/$(host_arch)/kubectl"
-    chmod 755 kubectl
-    mv kubectl "$HOME/.local/bin/kubectl"
+  echo "Installing kubectl"
+  curl -s -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/$(host_arch)/kubectl"
+  chmod 755 kubectl
+  mv kubectl "$HOME/.local/bin/kubectl"
 else
-    echo "kubectl already install"
+  echo "kubectl already install"
 fi
 
 if [ ! -f "$HOME/.kubectlrc" ]; then
-    kubectl completion zsh > "$HOME/.kubectlrc"
+  kubectl completion zsh >"$HOME/.kubectlrc"
 fi
 
 check_and_write '# kubectl completion' 'source "$HOME/.kubectlrc"' "$HOME/.devrc"
 
 link "$dev_dir/vimrc" "$HOME/.vimrc"
 if [ ! -f "$HOME/.vim/colors/solarized.vim" ]; then
-    echo "Installing solarized vim colors"
-    wget -q https://raw.github.com/altercation/vim-colors-solarized/master/colors/solarized.vim
-    mkdir -p "$HOME/.vim/colors"
-    mv solarized.vim "$HOME/.vim/colors"
+  echo "Installing solarized vim colors"
+  wget -q https://raw.github.com/altercation/vim-colors-solarized/master/colors/solarized.vim
+  mkdir -p "$HOME/.vim/colors"
+  mv solarized.vim "$HOME/.vim/colors"
 fi
 
 if [ ! -f "$HOME/.atuin" ]; then
-    # Configure atuin
-    link "$dev_dir/atuinrc" "$HOME/.atuinrc"
+  # Configure atuin
+  link "$dev_dir/atuinrc" "$HOME/.atuinrc"
 fi
 
 check_and_write '# Enable atuin history' 'source "$HOME/.atuin"' "$HOME/.devrc"
 
 if [ ! -f "$HOME/.just" ]; then
   echo "installing just completions"
-  just --completions zsh > "$HOME/.just"
+  just --completions zsh >"$HOME/.just"
 fi
 
 check_and_write '# Enable just completions' 'source "$HOME/.just"' "$HOME/.devrc"
