@@ -126,11 +126,12 @@ fi
 
 check_and_write '# atuin path' 'source "$HOME/.atuin/bin/env"' "$HOME/.devrc"
 remove_line "$HOME/.zshrc" 'atuin'
+link "$dev_dir/atiunrc" "$HOME/.atuinrc"
 
 echo "install rust binaries"
 cargo install eza bat du-dust just grex ripgrep procs xh zellij zoxide broot git-delta fd-find bottom difftastic
 
-cargo install goup-rs --git https://github.com/thinkgos/goup-rs
+cargo install goup-rs --git https://github.com/thinkgos/goup-rs --locked
 
 # Check for Go
 go_bin=$(which go 2>/dev/null)
