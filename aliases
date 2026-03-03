@@ -31,8 +31,8 @@ alias week='date +%V'
 # Stopwatch
 alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'
 
-# Make sure vi is vim
-alias vi="vim"
+# Make sure vi is nvim
+alias vi="nvim"
 
 # git is just g
 alias g="git"
@@ -50,7 +50,9 @@ alias sd="source ~/.devrc"
 # k8s aliases
 alias kk="kubectl"
 alias kl="k logs"
+alias klf="k logs -f"
 alias kp="k get pods"
+alias kpg="kp | rg "
 alias kpd="k describe pods"
 alias kex="k exec -it"
 alias mk='microk8s'

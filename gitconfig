@@ -50,6 +50,9 @@
     branches = branch -a
     remotes = remote -v
 
+    # work tree
+    wt = worktree
+
     # Credit an author on the latest commit
     credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
 
@@ -210,7 +213,4 @@
     # Set difftastic as the default difftool, so we don't need to specify
     # `-t difftastic` every time.
     tool = difftastic
-[user]
-	email = ravi@chamarthy.dev
-	name = Ravi Chamarthy
-	signingkey = FD50959F63EEA045
+

@@ -37,3 +37,58 @@ compdef _k k
 function gc() {
     git clone git@github.com:$GITHUB_ORG/$1.git
 }
+
+function gwt() {
+  set -euo pipefail
+
+  if [[ -z "${WORK_DIR:-}" ]]; then
+    echo "ERROR: WORK_DIR is not set"
+    return 1
+  fi
+
+  if [[ $# -ne 1 ]]; then
+    echo "Usage: gwt <branch>"
+    return 1
+  fi
+
+  local branch="$1"
+
+  # Ensure we're inside a git repo
+  local git_root
+  git_root=$(git rev-parse --show-toplevel 2>/dev/null) || {
+    echo "ERROR: Not inside a git repository"
+    return 1
+  }
+
+  local repo_name
+  repo_name=$(basename "$git_root")
+
+  local target_dir="$WORK_DIR/$branch"
+
+  if [[ -d "$target_dir" ]]; then
+    echo "ERROR: Worktree already exists at $target_dir"
+    return 1
+  fi
+
+  echo "Fetching origin..."
+  git fetch origin --prune
+
+  # Fail if branch exists locally
+  if git show-ref --verify --quiet "refs/heads/$branch"; then
+    echo "ERROR: Local branch '$branch' already exists"
+    return 1
+  fi
+
+  # Fail if branch exists remotely
+  if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+    echo "ERROR: Remote branch 'origin/$branch' already exists"
+    return 1
+  fi
+
+  # Otherwise create new branch from origin/main
+  echo "Creating new branch $branch from origin/main"
+  git worktree add -b "$branch" "$target_dir" origin/main
+
+  echo "going to the worktree, start working"
+  cd "$target_dir"
+}
